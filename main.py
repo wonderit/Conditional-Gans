@@ -7,8 +7,8 @@ import os
 flags = tf.app.flags
 
 flags.DEFINE_string("sample_dir" , "samples_for_test" , "the dir of sample images")
-flags.DEFINE_integer("output_size_row", 100 , "the size of generate image")
-flags.DEFINE_integer("output_size_col", 200 , "the size of generate image")
+flags.DEFINE_integer("output_size_row", 20 , "the size of generate image")
+flags.DEFINE_integer("output_size_col", 40 , "the size of generate image")
 flags.DEFINE_integer("learn_rate", 0.0002, "the learning rate for gan")
 flags.DEFINE_integer("batch_size", 64, "the batch number")
 flags.DEFINE_integer("z_dim", 100, "the dimension of noise z")

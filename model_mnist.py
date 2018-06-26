@@ -173,7 +173,7 @@ class CGAN(object):
 
             d1 = tf.concat([d1, y], 1)
 
-            d2 = tf.nn.relu(batch_normal(fully_connect(d1, output_size=25*50*2*64, scope='gen_fully2'), scope='gen_bn2'))
+            d2 = tf.nn.relu(batch_normal(fully_connect(d1, output_size=c1_row*c1_col*2*64, scope='gen_fully2'), scope='gen_bn2'))
 
             d2 = tf.reshape(d2, [self.batch_size, c1_row, c1_col, 64 * 2])
             d2 = conv_cond_concat(d2, yb)

@@ -92,3 +92,4 @@ ENV/
 data/
 model/
 model_bak/
+samples_for_test/

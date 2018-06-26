@@ -13,8 +13,8 @@ class CEM(object):
     def __init__(self):
 
         self.dataname = "CEM"
-        self.dims = 100*200
-        self.shape = [100 , 200 , 1]
+        self.dims = 20*40
+        self.shape = [20, 40, 1]
         # self.image_size = 28
         self.data, self.data_y = self.load_mnist()
 
@@ -59,6 +59,13 @@ class CEM(object):
             y_train.append(dataset[:, 1:25])
             for file in fileNames:
                 image = cv2.imread(DATAPATH + '/' + data + '/' + str(int(file)) + '.tiff', 0)
+                image = cv2.resize(image, None, fx=0.2, fy=0.2, interpolation=cv2.INTER_AREA)
+
+                # cv2.imshow('Shrink', image)
+                #
+                # cv2.waitKey(0)
+                # cv2.destroyAllWindows()
+
                 image = np.array(image, dtype=np.uint8)
                 image //= 255
                 x_train.append(image)
