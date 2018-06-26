@@ -1,4 +1,4 @@
-from utils import save_images, vis_square,sample_label
+from utils_cem import save_images, vis_square, sample_cem_label
 
 import cv2
 from ops import conv2d, lrelu, de_conv, fully_connect, conv_cond_concat, batch_normal
@@ -8,12 +8,14 @@ import numpy as np
 class CGAN(object):
 
     # build model
-    def __init__(self, data_ob, sample_dir, output_size, learn_rate, batch_size, z_dim, y_dim, log_dir
+    def __init__(self, data_ob, sample_dir, output_size_row, output_size_col, learn_rate, batch_size, z_dim, y_dim, log_dir
          , model_path, visua_path):
 
         self.data_ob = data_ob
         self.sample_dir = sample_dir
-        self.output_size = output_size
+        # self.output_size = output_size
+        self.output_size_row = output_size_row
+        self.output_size_col = output_size_col
         self.learn_rate = learn_rate
         self.batch_size = batch_size
         self.z_dim = z_dim
@@ -22,7 +24,7 @@ class CGAN(object):
         self.model_path = model_path
         self.vi_path = visua_path
         self.channel = self.data_ob.shape[2]
-        self.images = tf.placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
+        self.images = tf.placeholder(tf.float32, [batch_size, self.output_size_row, self.output_size_col, self.channel])
         self.z = tf.placeholder(tf.float32, [self.batch_size, self.z_dim])
         self.y = tf.placeholder(tf.float32, [self.batch_size, self.y_dim])
 
@@ -99,7 +101,7 @@ class CGAN(object):
 
                 if np.mod(step, 50) == 1 and step != 0:
 
-                    sample_images = sess.run(self.fake_images, feed_dict={self.z: batch_z, self.y: sample_label()})
+                    sample_images = sess.run(self.fake_images, feed_dict={self.z: batch_z, self.y: sample_cem_label()})
                     save_images(sample_images, [8, 8],
                                 './{}/train_{:04d}.png'.format(self.sample_dir, step))
 
@@ -120,7 +122,7 @@ class CGAN(object):
             self.saver.restore(sess, self.model_path)
             sample_z = np.random.uniform(1, -1, size=[self.batch_size, self.z_dim])
 
-            output = sess.run(self.fake_images, feed_dict={self.z: sample_z, self.y: sample_label()})
+            output = sess.run(self.fake_images, feed_dict={self.z: sample_z, self.y: sample_cem_label()})
 
             save_images(output, [8, 8], './{}/test{:02d}_{:04d}.png'.format(self.sample_dir, 0, 0))
 
@@ -148,7 +150,7 @@ class CGAN(object):
 
             # visualize the activation 1
             ac = sess.run([tf.get_collection('ac_2')],
-                          feed_dict={self.images: realbatch_array[:64], self.z: batch_z, self.y: sample_label()})
+                          feed_dict={self.images: realbatch_array[:64], self.z: batch_z, self.y: sample_cem_label()})
 
             vis_square(self.vi_path, ac[0][0].transpose(3, 1, 2, 0), type=0)
 
@@ -160,23 +162,25 @@ class CGAN(object):
 
             yb = tf.reshape(y, shape=[self.batch_size, 1, 1, self.y_dim])
             z = tf.concat([z, y], 1)
-            c1, c2 = self.output_size / 4, self.output_size / 2
+            # c1, c2 = self.output_size / 4, self.output_size / 2
+            c1_row, c2_row = self.output_size_row / 4, self.output_size_row / 2
+            c1_col, c2_col = self.output_size_col / 4, self.output_size_col / 2
 
             # 10 stand for the num of labels
             d1 = tf.nn.relu(batch_normal(fully_connect(z, output_size=1024, scope='gen_fully'), scope='gen_bn1'))
 
             d1 = tf.concat([d1, y], 1)
 
-            d2 = tf.nn.relu(batch_normal(fully_connect(d1, output_size=7*7*2*64, scope='gen_fully2'), scope='gen_bn2'))
+            d2 = tf.nn.relu(batch_normal(fully_connect(d1, output_size=25*50*2*64, scope='gen_fully2'), scope='gen_bn2'))
 
-            d2 = tf.reshape(d2, [self.batch_size, c1, c1, 64 * 2])
+            d2 = tf.reshape(d2, [self.batch_size, c1_row, c1_col, 64 * 2])
             d2 = conv_cond_concat(d2, yb)
 
-            d3 = tf.nn.relu(batch_normal(de_conv(d2, output_shape=[self.batch_size, c2, c2, 128], name='gen_deconv1'), scope='gen_bn3'))
+            d3 = tf.nn.relu(batch_normal(de_conv(d2, output_shape=[self.batch_size, c2_row, c2_col, 128], name='gen_deconv1'), scope='gen_bn3'))
 
             d3 = conv_cond_concat(d3, yb)
 
-            d4 = de_conv(d3, output_shape=[self.batch_size, self.output_size, self.output_size, self.channel], name='gen_deconv2')
+            d4 = de_conv(d3, output_shape=[self.batch_size, self.output_size_row, self.output_size_col, self.channel], name='gen_deconv2')
 
             return tf.nn.sigmoid(d4)
 
@@ -192,7 +196,7 @@ class CGAN(object):
             # concat
             concat_data = conv_cond_concat(images, yb)
 
-            conv1, w1 = conv2d(concat_data, output_dim=10, name='dis_conv1')
+            conv1, w1 = conv2d(concat_data, output_dim=24, name='dis_conv1')
             tf.add_to_collection('weight_1', w1)
 
             conv1 = lrelu(conv1)

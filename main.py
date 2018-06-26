@@ -1,16 +1,18 @@
 from model_mnist import CGAN
 import tensorflow as tf
-from utils import Mnist
+from utils_cem import CEM
+
 import os
 
 flags = tf.app.flags
 
 flags.DEFINE_string("sample_dir" , "samples_for_test" , "the dir of sample images")
-flags.DEFINE_integer("output_size", 28 , "the size of generate image")
+flags.DEFINE_integer("output_size_row", 100 , "the size of generate image")
+flags.DEFINE_integer("output_size_col", 200 , "the size of generate image")
 flags.DEFINE_integer("learn_rate", 0.0002, "the learning rate for gan")
 flags.DEFINE_integer("batch_size", 64, "the batch number")
 flags.DEFINE_integer("z_dim", 100, "the dimension of noise z")
-flags.DEFINE_integer("y_dim", 10, "the dimension of condition y")
+flags.DEFINE_integer("y_dim", 24, "the dimension of condition y")
 flags.DEFINE_string("log_dir" , "/tmp/tensorflow_mnist" , "the path of tensorflow's log")
 flags.DEFINE_string("model_path" , "model/model.ckpt" , "the path of model")
 flags.DEFINE_string("visua_path" , "visualization" , "the path of visuzation images")
@@ -29,9 +31,11 @@ if os.path.exists(FLAGS.visua_path) == False:
 
 def main(_):
 
-    mn_object = Mnist()
+    mn_object = CEM()
 
-    cg = CGAN(data_ob = mn_object, sample_dir = FLAGS.sample_dir, output_size=FLAGS.output_size, learn_rate=FLAGS.learn_rate
+    cg = CGAN(data_ob = mn_object, sample_dir = FLAGS.sample_dir, output_size_row=FLAGS.output_size_row,
+              output_size_col=FLAGS.output_size_col,
+              learn_rate=FLAGS.learn_rate
          , batch_size=FLAGS.batch_size, z_dim=FLAGS.z_dim, y_dim=FLAGS.y_dim, log_dir=FLAGS.log_dir
          , model_path=FLAGS.model_path, visua_path=FLAGS.visua_path)
 
