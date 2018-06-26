@@ -77,8 +77,9 @@ class CGAN(object):
             summary_writer = tf.summary.FileWriter(self.log_dir, graph=sess.graph)
 
             step = 0
-            while step <= 10000:
+            while step <= 1000:
 
+                self.tic()
                 realbatch_array, real_labels = self.data_ob.getNext_batch(step)
 
                 # Get the z
@@ -108,6 +109,7 @@ class CGAN(object):
                     self.saver.save(sess, self.model_path)
 
                 step = step + 1
+                self.toc()
 
             save_path = self.saver.save(sess, self.model_path)
             print "Model saved in file: %s" % save_path
@@ -220,7 +222,22 @@ class CGAN(object):
 
             return tf.nn.sigmoid(out), out
 
+    # tic-toc function for calculating computing time
+    def tic(self):
+        import time
+        global startTime_for_tictoc
+        startTime_for_tictoc = time.time()
 
+    def toc(self):
+        import time
+        if 'startTime_for_tictoc' in globals():
+            toc_ = "Elapsed time is " + str(time.time() - startTime_for_tictoc) + " seconds."
+            print(toc_)
+            return toc_
+        else:
+            toc_ = "Toc: start time not set"
+            print(toc_)
+            return toc_
 
 
 
