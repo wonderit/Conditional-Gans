@@ -112,7 +112,7 @@ class CGAN(object):
                 self.toc()
 
             save_path = self.saver.save(sess, self.model_path)
-            print "Model saved in file: %s" % save_path
+            print("Model saved in file: %s" % save_path)
 
     def test(self):
 
