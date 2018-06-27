@@ -165,8 +165,8 @@ class CGAN(object):
             yb = tf.reshape(y, shape=[self.batch_size, 1, 1, self.y_dim])
             z = tf.concat([z, y], 1)
             # c1, c2 = self.output_size / 4, self.output_size / 2
-            c1_row, c2_row = self.output_size_row / 4, self.output_size_row / 2
-            c1_col, c2_col = self.output_size_col / 4, self.output_size_col / 2
+            c1_row, c2_row = int(self.output_size_row / 4), int(self.output_size_row / 2)
+            c1_col, c2_col = int(self.output_size_col / 4), int(self.output_size_col / 2)
 
             # 10 stand for the num of labels
             d1 = tf.nn.relu(batch_normal(fully_connect(z, output_size=1024, scope='gen_fully'), scope='gen_bn1'))
