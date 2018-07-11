@@ -34,10 +34,10 @@ def compare(x , y):
         return 0
 
 def make_gif(images):
-    writeGif('result.gif', images, duration=0.5, dither=0)
+    writeGif('result.gif', images, duration=0.1, dither=0)
 
 #Run
-image_path = './samples_for_test/'
+image_path = './samples_20x40/'
 image_array = GetImage(image_path)
 
 make_gif(image_array)

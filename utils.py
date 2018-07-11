@@ -69,8 +69,8 @@ class Mnist(object):
             self.data_y = np.array(self.data_y)
             self.data_y = self.data_y[perm]
 
-        return self.data[(iter_num % ro_num) * batch_size: (iter_num% ro_num + 1) * batch_size] \
-            , self.data_y[(iter_num % ro_num) * batch_size: (iter_num%ro_num + 1) * batch_size]
+        return self.data[int(iter_num % ro_num) * batch_size: int(iter_num% ro_num + 1) * batch_size] \
+            , self.data_y[int(iter_num % ro_num) * batch_size: int(iter_num%ro_num + 1) * batch_size]
 
 
 def get_image(image_path , is_grayscale = False):

@@ -21,7 +21,7 @@ class CEM(object):
 
     def load_mnist(self):
 
-        DATAPATH = '/Users/kimwonsuk/Desktop/cdal/7.CEM/maxwellfdfd_ai_keras/data_train'
+        DATAPATH = '/home/wonderit/koreauniv/2018_1/2.CEM/maxwellfdfd_ai_keras/data_train'
         DATASETS = [
             'result_data500',
             'result_data501',
@@ -42,7 +42,17 @@ class CEM(object):
             '200x100_rl_0008',
             '200x100_rl_0009',
             '200x100_rl_0010',
-            '200x100_rl_0011'
+            '200x100_rl_0011',
+            '0001',
+            '0002',
+            '0003',
+            '0004',
+            '0005',
+            '0006',
+            '0007',
+            '0008',
+            '0009',
+            '0010'
         ]
 
         x_train = []
@@ -59,7 +69,7 @@ class CEM(object):
             y_train.append(dataset[:, 1:25])
             for file in fileNames:
                 image = cv2.imread(DATAPATH + '/' + data + '/' + str(int(file)) + '.tiff', 0)
-                image = cv2.resize(image, None, fx=0.2, fy=0.2, interpolation=cv2.INTER_AREA)
+                image = cv2.resize(image, None, fx=100/self.shape[0], fy=200/self.shape[1], interpolation=cv2.INTER_AREA)
 
                 # cv2.imshow('Shrink', image)
                 #
@@ -72,6 +82,7 @@ class CEM(object):
 
         x_train = np.array(x_train)
         y_train = np.array(y_train)
+        y_train /= 2600.
         print(x_train.shape)
         print(y_train.shape)
 
@@ -107,8 +118,8 @@ class CEM(object):
             self.data_y = np.array(self.data_y)
             self.data_y = self.data_y[perm]
 
-        return self.data[(iter_num % ro_num) * batch_size: (iter_num% ro_num + 1) * batch_size] \
-            , self.data_y[(iter_num % ro_num) * batch_size: (iter_num%ro_num + 1) * batch_size]
+        return self.data[int((iter_num % ro_num) * batch_size): int((iter_num% ro_num + 1) * batch_size)] \
+            , self.data_y[int((iter_num % ro_num) * batch_size): int((iter_num%ro_num + 1) * batch_size)]
 
 
 def get_image(image_path , is_grayscale = False):
@@ -184,22 +195,89 @@ def vis_square(visu_path , data , type):
 
 def sample_label():
     num = 64
-    label_vector = np.zeros((num, 24), dtype=np.float)
-    for i in range(0, num):
-        label_vector[i, i/8] = 1.0
+    # label_vector = np.zeros((num, 10), dtype=np.float)
+    # for i in range(0, num):
+    #     label_vector[i, i//8] = 0.5
+    #
+    # print(label_vector)
+    label_vector =[
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 0., 0., 0., 0., 0., 0., 1.0, 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 1.0, 1.0, 0., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1.0, 1.0, 0., 0., 0., 0.],
 
-    print(label_vector.shape)
+    ]
+
     return label_vector
 
 
 def sample_cem_label():
-    DATAPATH = '/Users/kimwonsuk/Desktop/cdal/7.CEM/maxwellfdfd_ai_keras/data_test/200x100_rl_0013.csv'
+    DATAPATH = '/home/wonderit/koreauniv/2018_1/2.CEM/maxwellfdfd_ai_keras/data_test/200x100_rl_0013.csv'
     y_test = []
     dataframe = pd.read_csv(DATAPATH, delim_whitespace=False, header=None)
     dataset = dataframe.values
     y_test.extend(dataset[:8, 1:25])
     y_test = np.array(y_test)
-    print(y_test.shape)
 
     num = 64
     label_vector = []
@@ -207,6 +285,5 @@ def sample_cem_label():
         label_vector.append(y_test[i//8])
 
     label_vector = np.array(label_vector)
-    print(label_vector.shape)
-    print(label_vector)
+    label_vector /= 2600.
     return label_vector

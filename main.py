@@ -1,4 +1,4 @@
-from model_mnist import CGAN
+from model_cem import CGAN
 import tensorflow as tf
 from utils_cem import CEM
 
@@ -7,13 +7,13 @@ import os
 flags = tf.app.flags
 
 flags.DEFINE_string("sample_dir" , "samples_for_test" , "the dir of sample images")
-flags.DEFINE_integer("output_size_row", 20 , "the size of generate image")
-flags.DEFINE_integer("output_size_col", 40 , "the size of generate image")
-flags.DEFINE_integer("learn_rate", 0.0002, "the learning rate for gan")
+flags.DEFINE_integer("output_size_row", 20, "the size of generate image")
+flags.DEFINE_integer("output_size_col", 40, "the size of generate image")
+flags.DEFINE_float("learn_rate", 0.0002, "the learning rate for gan")
 flags.DEFINE_integer("batch_size", 64, "the batch number")
 flags.DEFINE_integer("z_dim", 100, "the dimension of noise z")
 flags.DEFINE_integer("y_dim", 24, "the dimension of condition y")
-flags.DEFINE_string("log_dir" , "/tmp/tensorflow_mnist" , "the path of tensorflow's log")
+flags.DEFINE_string("log_dir" , "/tmp/tensorflow_cem_20x40" , "the path of tensorflow's log")
 flags.DEFINE_string("model_path" , "model/model.ckpt" , "the path of model")
 flags.DEFINE_string("visua_path" , "visualization" , "the path of visuzation images")
 flags.DEFINE_integer("op" , 0, "0: train ; 1:test ; 2:visualize")

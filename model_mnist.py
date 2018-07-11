@@ -1,4 +1,4 @@
-from utils_cem import save_images, vis_square, sample_cem_label
+from utils_cem import save_images, vis_square, sample_label
 
 import cv2
 from ops import conv2d, lrelu, de_conv, fully_connect, conv_cond_concat, batch_normal
@@ -77,7 +77,7 @@ class CGAN(object):
             summary_writer = tf.summary.FileWriter(self.log_dir, graph=sess.graph)
 
             step = 0
-            while step <= 1000:
+            while step <= 3000:
 
                 self.tic()
                 realbatch_array, real_labels = self.data_ob.getNext_batch(step)
@@ -95,21 +95,21 @@ class CGAN(object):
                 summary_writer.add_summary(summary_str, step)
 
                 if step % 50 == 0:
-
+                    self.toc()
                     D_loss = sess.run(self.D_loss, feed_dict={self.images: realbatch_array, self.z: batch_z, self.y: real_labels})
                     fake_loss = sess.run(self.G_loss, feed_dict={self.z: batch_z, self.y: real_labels})
                     print("Step %d: D: loss = %.7f G: loss=%.7f " % (step, D_loss, fake_loss))
 
                 if np.mod(step, 50) == 1 and step != 0:
 
-                    sample_images = sess.run(self.fake_images, feed_dict={self.z: batch_z, self.y: sample_cem_label()})
+                    sample_images = sess.run(self.fake_images, feed_dict={self.z: batch_z, self.y: sample_label()})
                     save_images(sample_images, [8, 8],
                                 './{}/train_{:04d}.png'.format(self.sample_dir, step))
 
                     self.saver.save(sess, self.model_path)
 
                 step = step + 1
-                self.toc()
+
 
             save_path = self.saver.save(sess, self.model_path)
             print("Model saved in file: %s" % save_path)
@@ -124,7 +124,7 @@ class CGAN(object):
             self.saver.restore(sess, self.model_path)
             sample_z = np.random.uniform(1, -1, size=[self.batch_size, self.z_dim])
 
-            output = sess.run(self.fake_images, feed_dict={self.z: sample_z, self.y: sample_cem_label()})
+            output = sess.run(self.fake_images, feed_dict={self.z: sample_z, self.y: sample_label()})
 
             save_images(output, [8, 8], './{}/test{:02d}_{:04d}.png'.format(self.sample_dir, 0, 0))
 
@@ -152,7 +152,7 @@ class CGAN(object):
 
             # visualize the activation 1
             ac = sess.run([tf.get_collection('ac_2')],
-                          feed_dict={self.images: realbatch_array[:64], self.z: batch_z, self.y: sample_cem_label()})
+                          feed_dict={self.images: realbatch_array[:64], self.z: batch_z, self.y: sample_label()})
 
             vis_square(self.vi_path, ac[0][0].transpose(3, 1, 2, 0), type=0)
 
@@ -165,8 +165,8 @@ class CGAN(object):
             yb = tf.reshape(y, shape=[self.batch_size, 1, 1, self.y_dim])
             z = tf.concat([z, y], 1)
             # c1, c2 = self.output_size / 4, self.output_size / 2
-            c1_row, c2_row = self.output_size_row / 4, self.output_size_row / 2
-            c1_col, c2_col = self.output_size_col / 4, self.output_size_col / 2
+            c1_row, c2_row = int(self.output_size_row / 4), int(self.output_size_row / 2)
+            c1_col, c2_col = int(self.output_size_col / 4), int(self.output_size_col / 2)
 
             # 10 stand for the num of labels
             d1 = tf.nn.relu(batch_normal(fully_connect(z, output_size=1024, scope='gen_fully'), scope='gen_bn1'))
