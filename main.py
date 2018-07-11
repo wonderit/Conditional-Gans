@@ -1,4 +1,4 @@
-from model_mnist import CGAN
+from model_cem import CGAN
 import tensorflow as tf
 from utils_cem import CEM
 
@@ -6,7 +6,7 @@ import os
 
 flags = tf.app.flags
 
-flags.DEFINE_string("sample_dir" , "samples_for_test" , "the dir of sample images")
+flags.DEFINE_string("sample_dir" , "samples_20x40" , "the dir of sample images")
 flags.DEFINE_integer("output_size_row", 20 , "the size of generate image")
 flags.DEFINE_integer("output_size_col", 40 , "the size of generate image")
 flags.DEFINE_integer("learn_rate", 0.0002, "the learning rate for gan")
